@@ -333,6 +333,17 @@
   <item type="id" name="btn_chatTranslateStylePopup" />
   <item type="id" name="btn_chatTranslateStyleInline" />
   <item type="id" name="btn_chatTranslateStyleNone" />
+  <item type="id" name="btn_advancedAutoTranslate" />
+  <item type="id" name="btn_advancedTranslateTarget" />
+  <item type="id" name="btn_advancedSkipChinese" />
+  <item type="id" name="btn_advancedWholeChat" />
+  <item type="id" name="btn_advancedTranslateTargetLang" />
+  <item type="id" name="btn_advancedTranslatorConfig" />
+  <item type="id" name="btn_advancedTargetZhCN" />
+  <item type="id" name="btn_advancedTargetZhTW" />
+  <item type="id" name="btn_advancedTargetApp" />
+  <item type="id" name="btn_advancedTranslatorTelegram" />
+  <item type="id" name="btn_advancedTranslatorGoogle" />
   <item type="id" name="btn_chatDoNotTranslate" />
   <item type="id" name="btn_chatDoNotTranslateAppLang" />
   <item type="id" name="btn_chatDoNotTranslateSelected" />

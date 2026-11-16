@@ -81,6 +81,17 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
           view.findRadioView().setChecked(item.isSelected(), isUpdate);
         } else if (itemId == R.id.btn_quickTranslate) {
           view.getToggler().setRadioEnabled(Settings.instance().needUseQuickTranslation(), isUpdate);
+        } else if (itemId == R.id.btn_advancedAutoTranslate) {
+          view.getToggler().setRadioEnabled(Settings.instance().isAdvancedAutoTranslateEnabled(), isUpdate);
+        } else if (itemId == R.id.btn_advancedSkipChinese) {
+          view.getToggler().setRadioEnabled(Settings.instance().isAdvancedSkipChineseEnabled(), isUpdate);
+        } else if (itemId == R.id.btn_advancedWholeChat) {
+          view.getToggler().setRadioEnabled(Settings.instance().isAdvancedTranslateWholeChatEnabled(), isUpdate);
+        } else if (itemId == R.id.btn_advancedTranslateTargetLang) {
+          view.setData(getAdvancedTargetName());
+        } else if (itemId == R.id.btn_advancedTranslatorConfig) {
+          view.setData(Lang.getString(Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE
+            ? R.string.AdvancedTranslatorGoogle : R.string.AdvancedTranslatorTelegram));
         }
       }
     };
@@ -97,6 +108,19 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
     items.add(new ListItem(ListItem.TYPE_RADIO_OPTION, R.id.btn_chatTranslateStyleNone, 0, R.string.ChatTranslateStyle3, R.id.btn_chatTranslateStyle, chatTranslateMode == Settings.TRANSLATE_MODE_NONE));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.TranslateSettingsDesc));
+    items.add(new ListItem(ListItem.TYPE_HEADER_PADDED, 0, 0, R.string.AdvancedTranslateTarget));
+    items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
+    items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_advancedAutoTranslate, 0, R.string.AdvancedAutoTranslate));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_advancedSkipChinese, 0, R.string.AdvancedSkipChinese));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_advancedWholeChat, 0, R.string.AdvancedWholeChat));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_advancedTranslateTargetLang, 0, R.string.AdvancedTargetLanguage));
+    items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
+    items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_advancedTranslatorConfig, 0, R.string.AdvancedTranslator));
+    items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
+    items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.AdvancedTranslateDesc));
     headerItemCount = items.size();
 
     if (Settings.instance().getChatTranslateMode() != Settings.TRANSLATE_MODE_NONE) {
@@ -169,7 +193,60 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
       adapter.updateAllValuedSettingsById(R.id.btn_chatDoNotTranslateSelected);
     } else if (viewId == R.id.btn_quickTranslate) {
       Settings.instance().setUseQuickTranslation(adapter.toggleView(v));
+    } else if (viewId == R.id.btn_advancedAutoTranslate) {
+      Settings.instance().setAdvancedAutoTranslateEnabled(adapter.toggleView(v));
+      if (Settings.instance().isAdvancedAutoTranslateEnabled()
+          && Settings.instance().getChatTranslateMode() != Settings.TRANSLATE_MODE_INLINE) {
+        updateTranslationStyleMode(Settings.TRANSLATE_MODE_INLINE);
+        adapter.notifyDataSetChanged();
+      }
+    } else if (viewId == R.id.btn_advancedSkipChinese) {
+      Settings.instance().setAdvancedSkipChineseEnabled(adapter.toggleView(v));
+    } else if (viewId == R.id.btn_advancedWholeChat) {
+      Settings.instance().setAdvancedTranslateWholeChatEnabled(adapter.toggleView(v));
+    } else if (viewId == R.id.btn_advancedTranslateTargetLang) {
+      showAdvancedTargetOptions();
+    } else if (viewId == R.id.btn_advancedTranslatorConfig) {
+      showAdvancedTranslatorOptions();
     }
+  }
+
+  private CharSequence getAdvancedTargetName () {
+    String target = Settings.instance().getAdvancedTranslateTarget();
+    if (Settings.ADVANCED_TARGET_APP.equals(target)) {
+      return Lang.getString(R.string.AdvancedTargetApp);
+    }
+    if ("zh-TW".equals(target)) {
+      return Lang.getString(R.string.AdvancedTargetZhTW);
+    }
+    return Lang.getString(R.string.AdvancedTargetZhCN);
+  }
+
+  private void showAdvancedTargetOptions () {
+    showOptions(null, new int[] {R.id.btn_advancedTargetZhCN, R.id.btn_advancedTargetZhTW, R.id.btn_advancedTargetApp},
+      new String[] {Lang.getString(R.string.AdvancedTargetZhCN), Lang.getString(R.string.AdvancedTargetZhTW), Lang.getString(R.string.AdvancedTargetApp)},
+      null, null, (itemView, id) -> {
+        if (id == R.id.btn_advancedTargetZhCN) {
+          Settings.instance().setAdvancedTranslateTarget("zh-CN");
+        } else if (id == R.id.btn_advancedTargetZhTW) {
+          Settings.instance().setAdvancedTranslateTarget("zh-TW");
+        } else if (id == R.id.btn_advancedTargetApp) {
+          Settings.instance().setAdvancedTranslateTarget(Settings.ADVANCED_TARGET_APP);
+        }
+        adapter.updateValuedSettingById(R.id.btn_advancedTranslateTargetLang);
+        return true;
+      });
+  }
+
+  private void showAdvancedTranslatorOptions () {
+    showOptions(null, new int[] {R.id.btn_advancedTranslatorTelegram, R.id.btn_advancedTranslatorGoogle},
+      new String[] {Lang.getString(R.string.AdvancedTranslatorTelegram), Lang.getString(R.string.AdvancedTranslatorGoogle)},
+      null, null, (itemView, id) -> {
+        Settings.instance().setAdvancedTranslator(id == R.id.btn_advancedTranslatorGoogle
+          ? Settings.TRANSLATOR_GOOGLE : Settings.TRANSLATOR_TELEGRAM);
+        adapter.updateValuedSettingById(R.id.btn_advancedTranslatorConfig);
+        return true;
+      });
   }
 
   private void updateTranslationStyleMode (int mode) {

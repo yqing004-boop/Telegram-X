@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import org.drinkless.tdlib.Client;
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.telegram.Tdlib;
+import org.thunderdog.challegram.unsorted.Settings;
 import org.thunderdog.challegram.util.TranslationCounterDrawable;
 
 import java.util.HashMap;
@@ -121,6 +122,14 @@ public final class TranslationsManager {
   }
 
   private void requestTranslationImpl (TdApi.FormattedText originalText, String toLanguage, Client.ResultHandler callback) {
+    if (Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE) {
+      final String source = originalText.text;
+      final String target = toLanguage;
+      Thread thread = new Thread(() -> callback.onResult(GoogleWebTranslator.translate(source, target)), "tgx-google-translate");
+      thread.setDaemon(true);
+      thread.start();
+      return;
+    }
     tdlib.client().send(new TdApi.TranslateText(originalText, toLanguage, TdConstants.TEXT_FORMAT_NEUTRAL), callback);
   }
 

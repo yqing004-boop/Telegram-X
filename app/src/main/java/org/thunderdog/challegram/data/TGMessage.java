@@ -9643,8 +9643,12 @@ public abstract class TGMessage implements InvalidateContentProvider, TdlibDeleg
   }
 
   public void startTranslated () {
+    startTranslated(Lang.getDefaultLanguageToTranslateV2(textToTranslateOriginalLanguage));
+  }
+
+  public void startTranslated (String targetLanguage) {
     translatedCounterForceShow = true;
-    mTranslationsManager.requestTranslation(Lang.getDefaultLanguageToTranslateV2(textToTranslateOriginalLanguage));
+    mTranslationsManager.requestTranslation(targetLanguage);
   }
 
   public void stopTranslated () {

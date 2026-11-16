@@ -36,6 +36,7 @@ import org.thunderdog.challegram.Log;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.core.Lang;
+import org.thunderdog.challegram.data.AdvancedChineseTranslation;
 import org.thunderdog.challegram.data.TD;
 import org.thunderdog.challegram.data.TGMessage;
 import org.thunderdog.challegram.data.TGMessageBotInfo;
@@ -1014,7 +1015,7 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
   }
 
   public int getUsedTranslateStyleMode () {
-    return usedTranslateStyleMode;
+    return Settings.instance().getChatTranslateMode();
   }
 
   @Nullable
@@ -2738,6 +2739,20 @@ public class MessagesManager implements Client.ResultHandler, MessagesSearchMana
     viewMessages(false);
     saveScrollPosition();
     checkSponsoredMessages();
+    translateWholeChatIfNeeded();
+  }
+
+  private void translateWholeChatIfNeeded () {
+    if (!Settings.instance().isAdvancedAutoTranslateEnabled()
+        || !Settings.instance().isAdvancedTranslateWholeChatEnabled()
+        || Settings.instance().getChatTranslateMode() != Settings.TRANSLATE_MODE_INLINE) return;
+    final int count = adapter.getMessageCount();
+    for (int i = 0; i < count; i++) {
+      TGMessage message = adapter.getMessage(i);
+      if (message != null) {
+        AdvancedChineseTranslation.onWholeChatRequested(message);
+      }
+    }
   }
 
   // Highlight message id

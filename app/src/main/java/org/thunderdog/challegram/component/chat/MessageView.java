@@ -33,6 +33,7 @@ import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.config.Config;
 import org.thunderdog.challegram.core.Lang;
+import org.thunderdog.challegram.data.AdvancedChineseTranslation;
 import org.thunderdog.challegram.data.ContentPreview;
 import org.thunderdog.challegram.data.TD;
 import org.thunderdog.challegram.data.TGMessage;
@@ -334,6 +335,7 @@ public class MessageView extends SparseDrawableView implements Destroyable, Draw
 
     if (this.msg != null) {
       msg.onAttachedToView(this);
+      AdvancedChineseTranslation.onMessageVisible(msg);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && manager.useBubbles()) {
         invalidateOutline();
       }

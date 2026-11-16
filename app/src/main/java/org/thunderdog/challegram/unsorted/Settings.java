@@ -1222,6 +1222,58 @@ public class Settings {
   public static final int TRANSLATE_MODE_INLINE = 3;
   private Integer _chatTranslateMode;
 
+  // Advanced message translation options are independent of Telegram X's existing translation mode.
+  public static final int TRANSLATOR_TELEGRAM = 0;
+  public static final int TRANSLATOR_GOOGLE = 1;
+  public static final String ADVANCED_TARGET_APP = "app";
+
+  private static final String KEY_ADVANCED_AUTO_TRANSLATE = "advanced_auto_translate_zh";
+  private static final String KEY_ADVANCED_TRANSLATE_TARGET = "advanced_translate_target_zh";
+  private static final String KEY_ADVANCED_SKIP_CHINESE = "advanced_skip_chinese_zh";
+  private static final String KEY_ADVANCED_TRANSLATOR = "advanced_translator_zh";
+  private static final String KEY_ADVANCED_WHOLE_CHAT = "advanced_whole_chat_zh";
+
+  public boolean isAdvancedTranslateWholeChatEnabled () {
+    return pmc.getBoolean(KEY_ADVANCED_WHOLE_CHAT, false);
+  }
+
+  public void setAdvancedTranslateWholeChatEnabled (boolean enabled) {
+    pmc.putBoolean(KEY_ADVANCED_WHOLE_CHAT, enabled);
+  }
+
+  public int getAdvancedTranslator () {
+    return pmc.getInt(KEY_ADVANCED_TRANSLATOR, TRANSLATOR_TELEGRAM);
+  }
+
+  public void setAdvancedTranslator (int translator) {
+    pmc.putInt(KEY_ADVANCED_TRANSLATOR, translator);
+  }
+
+  public boolean isAdvancedAutoTranslateEnabled () {
+    return pmc.getBoolean(KEY_ADVANCED_AUTO_TRANSLATE, false);
+  }
+
+  public void setAdvancedAutoTranslateEnabled (boolean enabled) {
+    pmc.putBoolean(KEY_ADVANCED_AUTO_TRANSLATE, enabled);
+  }
+
+  public String getAdvancedTranslateTarget () {
+    String value = pmc.getString(KEY_ADVANCED_TRANSLATE_TARGET, "zh-CN");
+    return value != null ? value : "zh-CN";
+  }
+
+  public void setAdvancedTranslateTarget (String language) {
+    pmc.putString(KEY_ADVANCED_TRANSLATE_TARGET, language);
+  }
+
+  public boolean isAdvancedSkipChineseEnabled () {
+    return pmc.getBoolean(KEY_ADVANCED_SKIP_CHINESE, true);
+  }
+
+  public void setAdvancedSkipChineseEnabled (boolean enabled) {
+    pmc.putBoolean(KEY_ADVANCED_SKIP_CHINESE, enabled);
+  }
+
   public int getChatTranslateMode () {
     if (_chatTranslateMode == null) {
       _chatTranslateMode = pmc.getInt(KEY_CHAT_TRANSLATE_MODE, TRANSLATE_MODE_POPUP);
