@@ -106,10 +106,15 @@ public final class TranslationCache {
     synchronized (TranslationCache.class) {
       try {
         if (!file.exists()) return;
-        byte[] buffer = new byte[(int) file.length()];
+        int length = (int) file.length();
+        if (length <= 0) return;
+        byte[] buffer = new byte[length];
+        int read = 0;
         try (FileInputStream in = new FileInputStream(file)) {
-          int read = 0, n;
-          while ((n = in.read(buffer, read, buffer.length - read)) > 0) read += n;
+          int n;
+          while (read < length && (n = in.read(buffer, read, length - read)) > 0) {
+            read += n;
+          }
         }
         JSONObject root = new JSONObject(new String(buffer, 0, read, StandardCharsets.UTF_8));
         JSONArray arr = root.optJSONArray("items");
