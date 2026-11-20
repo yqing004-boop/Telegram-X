@@ -53,7 +53,7 @@ jobs:
             echo "telegram.api_id=94575"
             echo "telegram.api_hash=a3406de8d171bb422bb6ddf3bbd800e2"
             echo "app.id=org.thunderdog.challegram"
-            echo "app.name=Telegram X"
+            echo "app.name=TelegramCh"
             echo "app.download_url=https://telegram.org/dlx"
             echo "tgx.extension=none"
             echo "app.disable_signing=true"
@@ -87,7 +87,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TelegramX-Chinese-zh-CN-debug
+          name: TelegramCh-zh-CN-debug
           path: ${{ steps.apk.outputs.apk_path }}
           retention-days: 30
           compression-level: 0
