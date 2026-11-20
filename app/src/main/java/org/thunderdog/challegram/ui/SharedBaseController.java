@@ -19,6 +19,7 @@ import android.content.Context;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -31,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.drinkless.tdlib.TdApi;
 import org.thunderdog.challegram.R;
 import org.thunderdog.challegram.component.MediaCollectorDelegate;
+import org.thunderdog.challegram.util.MessageSourceProvider;
+import org.thunderdog.challegram.widget.FastScrollThumb;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.data.DoubleTextWrapper;
 import org.thunderdog.challegram.data.InlineResult;
@@ -252,7 +255,37 @@ public abstract class SharedBaseController <T extends MessageSourceProvider> ext
     buildCells();
     recyclerView.setAdapter(adapter);
     loadInitialChunk();
-    return recyclerView;
+
+    FastScrollThumb fastScroll = new FastScrollThumb(context);
+    recyclerView.attachFastScroll(fastScroll);
+    fastScroll.setLabelProvider((rv, factor) -> {
+      int position = (int) (factor * Math.max(0, adapter.getItems().size() - 1));
+      if (position >= 0 && position < adapter.getItems().size()) {
+        Object model = adapter.getItems().get(position).getData();
+        if (model instanceof MessageSourceProvider) {
+          int date = ((MessageSourceProvider) model).getSourceDate();
+          if (date > 0) {
+            return Lang.getDate(date, TimeUnit.SECONDS);
+          }
+        }
+      }
+      return null;
+    });
+    fastScroll.setLoadMoreRequester((rv, factor) -> {
+      if (factor >= 0.98f) {
+        loadMoreIfNeeded();
+      }
+    });
+
+    FrameLayout wrap = new FrameLayout(context);
+    recyclerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    wrap.addView(recyclerView);
+    FrameLayout.LayoutParams thumbParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    thumbParams.gravity = android.view.Gravity.RIGHT | android.view.Gravity.TOP;
+    thumbParams.width = Screen.dp(18f);
+    wrap.addView(fastScroll, thumbParams);
+    wrap.setLayoutParams(FrameLayoutFix.newParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    return wrap;
   }
 
   public RecyclerView getRecyclerView () {

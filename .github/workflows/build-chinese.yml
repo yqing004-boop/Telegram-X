@@ -1,8 +1,6 @@
 name: Build TGX with Chinese Auto-Translation
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -42,6 +40,17 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           packages: "platforms;android-37.0 build-tools;37.0.0 ndk;30.0.16248370 cmake;3.22.1"
+
+      - name: Download sing-box core
+        run: |
+          SINGBOX_VERSION=$(grep '^version.singbox=' version.properties 2>/dev/null | cut -d= -f2 || true)
+          [ -z "$SINGBOX_VERSION" ] && SINGBOX_VERSION=1.14.4
+          echo "Downloading sing-box $SINGBOX_VERSION"
+          mkdir -p app/src/main/jniLibs/arm64-v8a
+          curl -sL -o /tmp/singbox.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SINGBOX_VERSION}/sing-box-${SINGBOX_VERSION}-android-arm64.tar.gz"
+          tar -xzf /tmp/singbox.tar.gz -C /tmp
+          cp "/tmp/sing-box-${SINGBOX_VERSION}-android-arm64/sing-box" app/src/main/jniLibs/arm64-v8a/libsingbox.so
+          ls -lh app/src/main/jniLibs/arm64-v8a/libsingbox.so
 
       - name: Configure local.properties
         shell: bash

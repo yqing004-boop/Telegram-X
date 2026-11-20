@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.thunderdog.challegram.widget.FastScrollThumb;
+
 public class MediaRecyclerView extends RecyclerView {
   public MediaRecyclerView (Context context) {
     super(context);
@@ -68,6 +70,19 @@ public class MediaRecyclerView extends RecyclerView {
     return super.getVerticalScrollbarPosition();
   }
 
+  private @Nullable FastScrollThumb fastScrollThumb;
+
+  public void attachFastScroll (@Nullable FastScrollThumb thumb) {
+    this.fastScrollThumb = thumb;
+    if (thumb != null) {
+      thumb.attach(this);
+    }
+  }
+
+  public @Nullable FastScrollThumb getFastScroll () {
+    return fastScrollThumb;
+  }
+
   private void init () {
     setVerticalScrollBarEnabled(false);
     addOnScrollListener(new OnScrollListener() {
@@ -75,6 +90,9 @@ public class MediaRecyclerView extends RecyclerView {
       public void onScrolled (RecyclerView recyclerView, int dx, int dy) {
         LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
         setScrollbarsVisible(manager.findFirstVisibleItemPosition() != 0);
+        if (fastScrollThumb != null && (dx != 0 || dy != 0)) {
+          fastScrollThumb.onScrolled();
+        }
       }
     });
   }

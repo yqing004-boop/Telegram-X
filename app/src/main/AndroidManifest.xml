@@ -165,6 +165,17 @@
       android:stopWithTask="false" />
 
     <service
+      android:name=".proxy.SingBoxService"
+      android:enabled="true"
+      android:exported="false"
+      android:foregroundServiceType="specialUse"
+      android:stopWithTask="false">
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="TelegramCh bundles a local proxy core selected by the user in the app settings; the foreground service keeps the user-selected proxy session alive while the app is running." />
+    </service>
+
+    <service
       android:name=".service.FetchNotificationService"
       android:enabled="true"
       android:exported="false"

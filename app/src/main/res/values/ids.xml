@@ -337,6 +337,12 @@
   <item type="id" name="btn_advancedTranslateTarget" />
   <item type="id" name="btn_advancedSkipChinese" />
   <item type="id" name="btn_advancedWholeChat" />
+  <item type="id" name="btn_proxyEntry" />
+  <item type="id" name="btn_proxyToggle" />
+  <item type="id" name="btn_proxySubscription" />
+  <item type="id" name="btn_proxyLinks" />
+  <item type="id" name="btn_proxyState" />
+  <item type="id" name="controller_proxySettings" />
   <item type="id" name="btn_advancedTranslateTargetLang" />
   <item type="id" name="btn_advancedTranslatorConfig" />
   <item type="id" name="btn_advancedTargetZhCN" />

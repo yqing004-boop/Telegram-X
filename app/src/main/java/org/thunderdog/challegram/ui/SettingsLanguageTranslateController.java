@@ -92,6 +92,10 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
         } else if (itemId == R.id.btn_advancedTranslatorConfig) {
           view.setData(Lang.getString(Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE
             ? R.string.AdvancedTranslatorGoogle : R.string.AdvancedTranslatorTelegram));
+        } else if (itemId == R.id.btn_proxyEntry) {
+          view.setData(org.thunderdog.challegram.proxy.SingBoxService.isRunning()
+            ? "运行中 · 127.0.0.1:" + org.thunderdog.challegram.proxy.SingBoxService.getBoundPort()
+            : Lang.getString(R.string.ProxySettingsOff));
         }
       }
     };
@@ -119,6 +123,8 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
     items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_advancedTranslateTargetLang, 0, R.string.AdvancedTargetLanguage));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
     items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_advancedTranslatorConfig, 0, R.string.AdvancedTranslator));
+    items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
+    items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_proxyEntry, 0, R.string.ProxyHeader));
     items.add(new ListItem(ListItem.TYPE_SHADOW_BOTTOM));
     items.add(new ListItem(ListItem.TYPE_DESCRIPTION, 0, 0, R.string.AdvancedTranslateDesc));
     headerItemCount = items.size();
@@ -208,6 +214,8 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
       showAdvancedTargetOptions();
     } else if (viewId == R.id.btn_advancedTranslatorConfig) {
       showAdvancedTranslatorOptions();
+    } else if (viewId == R.id.btn_proxyEntry) {
+      navigateTo(new org.thunderdog.challegram.proxy.ProxySettingsController(context, tdlib));
     }
   }
 
