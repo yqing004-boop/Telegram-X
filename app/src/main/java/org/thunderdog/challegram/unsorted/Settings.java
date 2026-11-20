@@ -1236,6 +1236,16 @@ public class Settings {
   private static final String KEY_AI_KEY = "ai_translate_key";
   private static final String KEY_AI_MODEL = "ai_translate_model";
 
+  private static final String KEY_INPUT_TRANSLATE_TARGET = "input_translate_target";
+
+  public String getInputTranslateTarget () {
+    return pmc.getString(KEY_INPUT_TRANSLATE_TARGET, "en");
+  }
+
+  public void setInputTranslateTarget (String value) {
+    pmc.putString(KEY_INPUT_TRANSLATE_TARGET, value);
+  }
+
   public String getAiTranslateEndpoint () {
     return pmc.getString(KEY_AI_ENDPOINT, "");
   }

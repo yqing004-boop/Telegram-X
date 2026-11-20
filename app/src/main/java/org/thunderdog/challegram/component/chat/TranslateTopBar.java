@@ -66,6 +66,16 @@ public class TranslateTopBar extends FrameLayout {
     });
     Views.setClickable(this);
 
+    // Frosted glass: blur-only background layer behind the content
+    int bgColor = 0xB3FFFFFF; // 70% white fallback
+    View glassLayer = new View(context);
+    glassLayer.setBackgroundColor(bgColor);
+    LayoutParams glassParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    addView(glassLayer, 0, glassParams);
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+      glassLayer.setRenderEffect(android.graphics.RenderEffect.createBlurEffect(
+        Screen.dp(10f), Screen.dp(10f), android.graphics.Shader.TileMode.CLAMP));
+    }
     updateText();
   }
 

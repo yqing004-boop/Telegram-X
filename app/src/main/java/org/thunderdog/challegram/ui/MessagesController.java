@@ -9691,12 +9691,18 @@ public class MessagesController extends ViewController<MessagesController.Argume
 
   private void displaySendButton () {
     sendButton.setVisibility(View.VISIBLE);
-    if (translateButton != null) translateButton.setVisibility(View.VISIBLE);
+    if (translateButton != null) {
+      translateButton.setVisibility(View.VISIBLE);
+      translateButton.setAlpha(1f);
+    }
   }
 
   private void hideSendButton () {
     sendButton.setVisibility(View.INVISIBLE);
-    if (translateButton != null) translateButton.setVisibility(View.INVISIBLE);
+    if (translateButton != null) {
+      translateButton.setVisibility(View.INVISIBLE);
+      translateButton.setAlpha(0f);
+    }
   }
 
   private void displayAttachButtons () {
@@ -9898,11 +9904,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
   }
 
   private String getInputTranslateTarget () {
-    String target = Settings.instance().getAdvancedTranslateTarget();
-    if (Settings.ADVANCED_TARGET_APP.equals(target)) {
-      target = Settings.instance().getLanguage().packInfo.pluralCode;
-    }
-    return target != null ? target : "zh-CN";
+    return Settings.instance().getInputTranslateTarget();
   }
 
   private void onInputTranslationResult (TdApi.FormattedText translated) {
@@ -9913,18 +9915,39 @@ public class MessagesController extends ViewController<MessagesController.Argume
   }
 
   private void showTranslateTargetOptions () {
-    showOptions(null, new int[] {R.id.btn_advancedTargetZhCN, R.id.btn_advancedTargetZhTW, R.id.btn_advancedTargetApp},
-      new String[] {Lang.getString(R.string.AdvancedTargetZhCN), Lang.getString(R.string.AdvancedTargetZhTW), Lang.getString(R.string.AdvancedTargetApp)},
+    showOptions(null,
+      new int[] {R.id.btn_inputTargetEn, R.id.btn_inputTargetZhCN, R.id.btn_inputTargetJa, R.id.btn_inputTargetCustom},
+      new String[] {"English", "简体中文", "日本語", "自定义语言…"},
       null, null, (itemView, id) -> {
-        if (id == R.id.btn_advancedTargetZhCN) {
-          Settings.instance().setAdvancedTranslateTarget("zh-CN");
-        } else if (id == R.id.btn_advancedTargetZhTW) {
-          Settings.instance().setAdvancedTranslateTarget("zh-TW");
-        } else if (id == R.id.btn_advancedTargetApp) {
-          Settings.instance().setAdvancedTranslateTarget(Settings.ADVANCED_TARGET_APP);
+        if (id == R.id.btn_inputTargetEn) {
+          Settings.instance().setInputTranslateTarget("en");
+        } else if (id == R.id.btn_inputTargetZhCN) {
+          Settings.instance().setInputTranslateTarget("zh-CN");
+        } else if (id == R.id.btn_inputTargetJa) {
+          Settings.instance().setInputTranslateTarget("ja");
+        } else if (id == R.id.btn_inputTargetCustom) {
+          showInputTargetCustom();
         }
         return true;
       });
+  }
+
+  private void showInputTargetCustom () {
+    EditTextController<String> controller = new EditTextController<>(context(), tdlib);
+    controller.setDelegate(new EditTextController.Delegate() {
+      @Override public int getId () { return R.id.controller_inputTargetCustom; }
+      @Override public CharSequence getName () { return "自定义目标语言"; }
+      @Override public CharSequence getHint () { return "en / zh-CN / ja / ko …"; }
+      @Override public CharSequence getDescription () { return "输入目标语言代码（ISO 639-1），如 en、zh-CN、ja"; }
+      @Override public String getCurrentValue () { return Settings.instance().getInputTranslateTarget(); }
+      @Override public boolean onDonePressed (EditTextController<?> c, DoneButton button, CharSequence value) {
+        String v = value != null ? value.toString().trim() : "";
+        if (!v.isEmpty()) Settings.instance().setInputTranslateTarget(v);
+        navigateBack();
+        return true;
+      }
+    });
+    navigateTo(controller);
   }
 
   public void sendText (boolean applyMarkdown, TdApi.MessageSendOptions sendOptions) {

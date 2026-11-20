@@ -5436,7 +5436,9 @@
   <string name="ChatTranslateStyle2">Inline</string>
   <string name="ChatTranslateStyle3">No translation</string>
   <string name="ChatTranslateStyleDisabled">Disabled</string>
-    <string name="InputTranslateHint">翻译输入框内容</string>
+      <string name="InputTranslateTargetCustom">自定义目标语言</string>
+  <string name="InputTranslateTargetDesc">输入目标语言代码（ISO 639-1），如 en、zh-CN、ja</string>
+<string name="InputTranslateHint">翻译输入框内容</string>
   <string name="InputTranslateEmpty">输入框为空</string>
   <string name="InputTranslateFailed">翻译失败</string>
   <string name="InputTranslateTarget">翻译目标语言</string>
