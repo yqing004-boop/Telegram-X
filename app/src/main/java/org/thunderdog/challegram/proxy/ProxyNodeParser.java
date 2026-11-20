@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.thunderdog.challegram.tool.Strings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -286,6 +285,6 @@ public final class ProxyNodeParser {
 
   @SuppressWarnings("unused")
   private static boolean validPort (int port) {
-    return port > 0 && port < 65536 && Strings.length(Integer.toString(port)) <= 5;
+    return port > 0 && port < 65536;
   }
 }

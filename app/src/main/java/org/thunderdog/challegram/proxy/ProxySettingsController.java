@@ -40,6 +40,11 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
     return false;
   }
 
+  @Override
+  public int getId () {
+    return R.id.controller_proxySettings;
+  }
+
   private static String getSubscriptionUrl () {
     return Settings.instance().getString(KEY_SUBSCRIPTION_URL, "");
   }
@@ -132,7 +137,7 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
           adapter.toggleView(v); // revert
         }
       } else {
-        SingBoxService.stopService(getContext());
+        SingBoxService.stopService(context());
       }
     } else if (viewId == R.id.btn_proxySubscription) {
       showSubscriptionInput();
@@ -144,8 +149,8 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
   private boolean startProxy () {
     String url = getSubscriptionUrl().trim();
     if (!url.isEmpty()) {
-      if (SingBoxService.startFromSubscription(getContext(), url)) {
-        SingBoxService.startService(getContext());
+      if (SingBoxService.startFromSubscription(context(), url)) {
+        SingBoxService.startService(context());
         adapter.updateAllValuedSettingsById(R.id.btn_proxyState);
         return true;
       }
@@ -159,8 +164,8 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
         if (node != null) nodes.add(node);
       }
       org.json.JSONObject config = ProxyNodeParser.buildConfigForLinks(nodes, 7891);
-      if (config != null && SingBoxService.startFromConfig(getContext(), config)) {
-        SingBoxService.startService(getContext());
+      if (config != null && SingBoxService.startFromConfig(context(), config)) {
+        SingBoxService.startService(context());
         adapter.updateAllValuedSettingsById(R.id.btn_proxyState);
         return true;
       }
@@ -174,7 +179,8 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
   private static final int INPUT_LINKS = 2;
 
   private void showSubscriptionInput () {
-    EditTextController<?> controller = new EditTextController<>(context(), new EditTextController.Delegate() {
+    EditTextController<String> controller = new EditTextController<>(context(), tdlib);
+    controller.setDelegate(new EditTextController.Delegate() {
       @Override public int getId () { return INPUT_SUBSCRIPTION; }
       @Override public CharSequence getName () { return Lang.getString(R.string.ProxySubscription); }
       @Override public CharSequence getHint () { return "https://..."; }
@@ -191,7 +197,8 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
   }
 
   private void showLinksInput () {
-    EditTextController<?> controller = new EditTextController<>(context(), new EditTextController.Delegate() {
+    EditTextController<String> controller = new EditTextController<>(context(), tdlib);
+    controller.setDelegate(new EditTextController.Delegate() {
       @Override public int getId () { return INPUT_LINKS; }
       @Override public CharSequence getName () { return Lang.getString(R.string.ProxyLinks); }
       @Override public CharSequence getHint () { return "vless://…\nhysteria2://…"; }

@@ -305,10 +305,12 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
         break;
     }
     final int whichFinal = which;
-    EditTextController<?> controller = new EditTextController<>(context(), new EditTextController.Delegate() {
+    EditTextController<String> controller = new EditTextController<>(context(), tdlib);
+    controller.setDelegate(new EditTextController.Delegate() {
       @Override public int getId () { return whichFinal; }
       @Override public CharSequence getName () { return Lang.getString(titleRes); }
       @Override public CharSequence getHint () { return ""; }
+      @Override public CharSequence getDescription () { return Lang.getString(R.string.ProxyDesc); }
       @Override public String getCurrentValue () { return current; }
       @Override public boolean onDonePressed (EditTextController<?> c, DoneButton button, CharSequence value) {
         String v = value != null ? value.toString().trim() : "";

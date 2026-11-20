@@ -175,7 +175,6 @@ public class FastScrollThumb extends View implements FactorAnimator.Target {
         if (startInThumb) {
           state = STATE_DRAGGING;
           getParent().requestDisallowInterceptTouchEvent(true);
-          thumbAnimator.forceValue(1f);
         }
         lastActivity = System.currentTimeMillis();
         return true;
