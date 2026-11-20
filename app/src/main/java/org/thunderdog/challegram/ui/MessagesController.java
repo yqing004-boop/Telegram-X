@@ -9724,6 +9724,11 @@ public class MessagesController extends ViewController<MessagesController.Argume
       attachButtons.setAlpha(1f - factor);
       attachButtons.setScaleX(scale2);
       attachButtons.setScaleY(scale2);
+      if (translateButton != null) {
+        translateButton.setAlpha(factor);
+        translateButton.setScaleX(scale1);
+        translateButton.setScaleY(scale1);
+      }
       messageSenderButton.setSendFactor(sendFactor);
 
       if (tooltipInfo != null && tooltipInfo.isVisible()) {
