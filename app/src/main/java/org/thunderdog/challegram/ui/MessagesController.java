@@ -112,6 +112,7 @@ import org.thunderdog.challegram.component.chat.MessagesManager;
 import org.thunderdog.challegram.component.chat.MessagesSearchManagerMiddleware;
 import org.thunderdog.challegram.component.chat.PinnedMessagesBar;
 import org.thunderdog.challegram.component.chat.TranslateTopBar;
+import org.thunderdog.challegram.widget.DoneButton;
 import org.thunderdog.challegram.component.chat.RaiseHelper;
 import org.thunderdog.challegram.component.chat.ReplyBarView;
 import org.thunderdog.challegram.component.chat.SilentButton;
