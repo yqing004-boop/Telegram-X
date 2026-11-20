@@ -102,8 +102,10 @@ public class MediaRecyclerView extends RecyclerView {
   private void setScrollbarsVisible (boolean visible) {
     if (this.scrollbarsVisible != visible) {
       this.scrollbarsVisible = visible;
-      setVerticalScrollBarEnabled(visible);
-      if (visible) {
+      // FastScrollThumb 已提供可拖动滑块，系统滚动条不再显示，避免两个滚动条混淆
+      setVerticalScrollBarEnabled(false);
+      if (visible && fastScrollThumb == null) {
+        setVerticalScrollBarEnabled(true);
         awakenScrollBars();
       }
     }

@@ -35,8 +35,8 @@ public class FastScrollThumb extends View implements FactorAnimator.Target {
   private final Paint bubbleTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
   private final RectF thumbRect = new RectF();
 
-  private final float thumbWidth = Screen.dp(4f);
-  private final float thumbWidthDragging = Screen.dp(6f);
+  private final float thumbWidth = Screen.dp(6f);
+  private final float thumbWidthDragging = Screen.dp(8f);
   private final float thumbHeight = Screen.dp(56f);
   private final float thumbMargin = Screen.dp(3f);
   private final float bubbleRadius = Screen.dp(18f);
@@ -86,8 +86,7 @@ public class FastScrollThumb extends View implements FactorAnimator.Target {
     if (state != STATE_DRAGGING) {
       state = STATE_SHOWING;
       thumbAnimator.animateTo(1f);
-      removeCallbacks(fadeOutRunnable);
-      postDelayed(fadeOutRunnable, FADE_OUT_DELAY);
+      // 常显模式：不自动淡出
       setVisibility(VISIBLE);
     }
   }
@@ -212,9 +211,9 @@ public class FastScrollThumb extends View implements FactorAnimator.Target {
     if (thumbFactor <= 0f && state == STATE_IDLE) return;
     float factor = thumbAnimator.getFactor();
     if (factor <= 0f) return;
-    int alpha = (int) (255f * factor * (state == STATE_DRAGGING ? 1f : 0.65f));
+    int alpha = (int) (255f * factor * (state == STATE_DRAGGING ? 1f : 0.9f));
 
-    int color = Theme.getColor(org.thunderdog.challegram.theme.ColorId.iconLight);
+    int color = Theme.getColor(org.thunderdog.challegram.theme.ColorId.text);
 
     thumbPaint.setColor(color);
     thumbPaint.setAlpha(alpha);
