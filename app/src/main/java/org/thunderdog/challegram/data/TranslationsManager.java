@@ -89,6 +89,13 @@ public final class TranslationsManager {
     if (textToTranslate == null) return;
 
     TdApi.FormattedText cachedText = getCachedTextTranslation(textToTranslate.text, language);
+    if (cachedText == null) {
+      String globalCached = TranslationCache.get(textToTranslate.text, language);
+      if (globalCached != null) {
+        cachedText = new TdApi.FormattedText(globalCached, new TdApi.TextEntity[0]);
+        saveCachedTextTranslation(textToTranslate.text, language, cachedText);
+      }
+    }
     if (cachedText != null) {
       dispatchResult(TranslationCounterDrawable.TRANSLATE_STATUS_SUCCESS, cachedText, true);
       return;
@@ -99,6 +106,7 @@ public final class TranslationsManager {
       if (object instanceof TdApi.FormattedText) {
         TdApi.FormattedText text = prepareTranslatedText((TdApi.FormattedText) object);
         saveCachedTextTranslation(textToTranslate.text, language, text);
+        TranslationCache.put(textToTranslate.text, language, text.text);
         if (StringUtils.equalsOrBothEmpty(currentTranslatedLanguage, language)) {
           dispatchResult(TranslationCounterDrawable.TRANSLATE_STATUS_SUCCESS, text, true);
         }
