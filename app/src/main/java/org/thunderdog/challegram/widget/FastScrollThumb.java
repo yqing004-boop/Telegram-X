@@ -246,14 +246,11 @@ public class FastScrollThumb extends View implements FactorAnimator.Target {
   }
 
   @Override
-  public void onFactorChanged (int id, float factor, float byFractionValue) {
+  public void onFactorChanged (int id, float factor, float fraction, FactorAnimator callee) {
     invalidate();
     if (factor <= 0f && state == STATE_SHOWING) {
       setVisibility(GONE);
       state = STATE_IDLE;
     }
   }
-
-  @Override
-  public void onFactorFactorChanged (int id, float factor, float byFractionValue) { }
 }

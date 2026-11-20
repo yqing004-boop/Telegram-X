@@ -9,7 +9,7 @@ import org.thunderdog.challegram.component.base.SettingView;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.data.TGAvatars;
 import org.thunderdog.challegram.telegram.Tdlib;
-import org.thunderdog.challegram.ui.DoneButton;
+import org.thunderdog.challegram.widget.DoneButton;
 import org.thunderdog.challegram.ui.EditTextController;
 import org.thunderdog.challegram.ui.ListItem;
 import org.thunderdog.challegram.ui.RecyclerViewController;
