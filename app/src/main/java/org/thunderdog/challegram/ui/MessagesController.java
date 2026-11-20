@@ -111,6 +111,7 @@ import org.thunderdog.challegram.component.chat.MessagesLayout;
 import org.thunderdog.challegram.component.chat.MessagesManager;
 import org.thunderdog.challegram.component.chat.MessagesSearchManagerMiddleware;
 import org.thunderdog.challegram.component.chat.PinnedMessagesBar;
+import org.thunderdog.challegram.component.chat.TranslateTopBar;
 import org.thunderdog.challegram.component.chat.RaiseHelper;
 import org.thunderdog.challegram.component.chat.ReplyBarView;
 import org.thunderdog.challegram.component.chat.SilentButton;
@@ -924,6 +925,22 @@ public class MessagesController extends ViewController<MessagesController.Argume
         navigateTo(c);
       }
     });
+    translateBar = new TranslateTopBar(context);
+    translateBar.setListener(new TranslateTopBar.Listener() {
+      @Override
+      public void onToggleViewOriginal () {
+        chatShowingOriginal = !chatShowingOriginal;
+        translateBar.setShowingOriginal(chatShowingOriginal);
+        setAutoTranslationActive(!chatShowingOriginal);
+      }
+
+      @Override
+      public void onOpenSettings () {
+        showTranslateBarMenu();
+      }
+    });
+    translateBarItem = new CollapseListView.ViewItem(translateBar, Screen.dp(36f));
+
     pinnedMessagesItem = new CollapseListView.Item() {
       @Override
       public int getVisualHeight () {
@@ -943,6 +960,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
 
     topBar.initWithList(new CollapseListView.Item[] {
       // TODO voice chat bar
+      translateBarItem,
       pinnedMessagesItem,
       requestsItem = new CollapseListView.ViewItem(requestsView, requestsViewHeight),
       liveLocationItem = new CollapseListView.ViewItem(liveLocationView, liveLocationHeight),
@@ -4035,6 +4053,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
   @Override
   public void onFocus () {
     super.onFocus();
+    updateTranslateBarVisibility();
     if (promptDraftPrefillOnFocus) {
       promptDraftPrefillOnFocus = false;
       fillDraft(this.fillDraft, true);
@@ -6541,6 +6560,9 @@ public class MessagesController extends ViewController<MessagesController.Argume
 
   private PinnedMessagesBar pinnedMessagesBar;
   private CollapseListView.Item pinnedMessagesItem;
+  private CollapseListView.Item translateBarItem;
+  private TranslateTopBar translateBar;
+  private boolean chatShowingOriginal;
 
   private JoinRequestsView requestsView;
   private CollapseListView.Item requestsItem;
@@ -9757,6 +9779,89 @@ public class MessagesController extends ViewController<MessagesController.Argume
       sendShown.setValue(isVisible, animated && isFocused());
       showMessageMenuTutorial();
     }
+  }
+
+  private void showTranslateBarMenu () {
+    String target = Settings.instance().getAdvancedTranslateTarget();
+    String targetName = Settings.ADVANCED_TARGET_APP.equals(target) ? "应用语言"
+      : "zh-TW".equals(target) ? "繁體中文" : "简体中文";
+    showOptions(null,
+      new int[] {R.id.btn_translateBarTarget, R.id.btn_translateBarHide, R.id.btn_translateBarOff, R.id.btn_translateBarSettings},
+      new String[] {"翻译为 " + targetName, "隐藏按钮", "关闭自动翻译", "去设置"},
+      null, null, (itemView, id) -> {
+        if (id == R.id.btn_translateBarTarget) {
+          showTranslateBarTargetOptions();
+        } else if (id == R.id.btn_translateBarHide) {
+          Settings.instance().setTranslateBarHiddenForChat(getChatId(), true);
+          topBar.setItemVisible(translateBarItem, false, isFocused());
+        } else if (id == R.id.btn_translateBarOff) {
+          setAutoTranslationActive(false);
+          Settings.instance().setAdvancedAutoTranslateEnabled(false);
+          topBar.setItemVisible(translateBarItem, false, isFocused());
+          adapter2NotifyTranslationChanged();
+        } else if (id == R.id.btn_translateBarSettings) {
+          navigateTo(new org.thunderdog.challegram.ui.SettingsLanguageTranslateController(context, tdlib));
+        }
+        return true;
+      });
+  }
+
+  private void adapter2NotifyTranslationChanged () {
+    org.thunderdog.challegram.component.chat.MessagesAdapter messagesAdapter = manager.getAdapter();
+    if (messagesAdapter == null) return;
+    int count = messagesAdapter.getItemCount();
+    for (int i = 0; i < count; i++) {
+      TGMessage msg = messagesAdapter.getMessage(i);
+      if (msg != null && msg.isTranslated()) {
+        msg.stopTranslated();
+      }
+    }
+  }
+
+  private void showTranslateBarTargetOptions () {
+    showOptions(null, new int[] {R.id.btn_advancedTargetZhCN, R.id.btn_advancedTargetZhTW, R.id.btn_advancedTargetApp},
+      new String[] {Lang.getString(R.string.AdvancedTargetZhCN), Lang.getString(R.string.AdvancedTargetZhTW), Lang.getString(R.string.AdvancedTargetApp)},
+      null, null, (itemView, id) -> {
+        if (id == R.id.btn_advancedTargetZhCN) {
+          Settings.instance().setAdvancedTranslateTarget("zh-CN");
+        } else if (id == R.id.btn_advancedTargetZhTW) {
+          Settings.instance().setAdvancedTranslateTarget("zh-TW");
+        } else if (id == R.id.btn_advancedTargetApp) {
+          Settings.instance().setAdvancedTranslateTarget(Settings.ADVANCED_TARGET_APP);
+        }
+        if (translateBar != null) translateBar.setShowingOriginal(chatShowingOriginal);
+        return true;
+      });
+  }
+
+  private void setAutoTranslationActive (boolean active) {
+    org.thunderdog.challegram.component.chat.MessagesAdapter messagesAdapter = manager.getAdapter();
+    if (messagesAdapter == null) return;
+    int count = messagesAdapter.getItemCount();
+    for (int i = 0; i < count; i++) {
+      TGMessage msg = messagesAdapter.getMessage(i);
+      if (msg == null) continue;
+      if (!active && msg.isTranslated()) {
+        msg.stopTranslated();
+      }
+    }
+    if (active) {
+      for (int i = 0; i < count; i++) {
+        TGMessage msg = messagesAdapter.getMessage(i);
+        if (msg != null) {
+          org.thunderdog.challegram.data.AdvancedChineseTranslation.onMessageVisible(msg);
+        }
+      }
+    }
+  }
+
+  private void updateTranslateBarVisibility () {
+    if (translateBarItem == null) return;
+    boolean shouldShow = Settings.instance().isAdvancedAutoTranslateEnabled()
+      && Settings.instance().getChatTranslateMode() != Settings.TRANSLATE_MODE_NONE
+      && !Settings.instance().isTranslateBarHiddenForChat(getChatId())
+      && !isChannel();
+    topBar.setItemVisible(translateBarItem, shouldShow, isFocused());
   }
 
   private void toggleInputTranslation () {

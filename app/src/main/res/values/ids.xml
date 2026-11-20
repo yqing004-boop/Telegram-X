@@ -339,6 +339,10 @@
   <item type="id" name="btn_advancedWholeChat" />
   <item type="id" name="btn_proxyEntry" />
   <item type="id" name="btn_input_translate" />
+  <item type="id" name="btn_translateBarTarget" />
+  <item type="id" name="btn_translateBarHide" />
+  <item type="id" name="btn_translateBarOff" />
+  <item type="id" name="btn_translateBarSettings" />
   <item type="id" name="btn_proxyToggle" />
   <item type="id" name="btn_proxySubscription" />
   <item type="id" name="btn_proxyLinks" />

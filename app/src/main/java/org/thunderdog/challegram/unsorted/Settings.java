@@ -1262,6 +1262,42 @@ public class Settings {
 
   private static final String KEY_ADVANCED_WHOLE_CHAT = "advanced_whole_chat_zh";
 
+  private static final String KEY_TRANSLATE_BAR_HIDDEN = "translate_bar_hidden_chats";
+
+  private java.util.HashSet<Long> _translateBarHiddenChats;
+
+  private void loadTranslateBarHiddenChats () {
+    if (_translateBarHiddenChats == null) {
+      _translateBarHiddenChats = new java.util.HashSet<>();
+      String raw = pmc.getString(KEY_TRANSLATE_BAR_HIDDEN, "");
+      if (raw != null && !raw.isEmpty()) {
+        for (String part : raw.split(",")) {
+          try { _translateBarHiddenChats.add(Long.parseLong(part.trim())); } catch (NumberFormatException ignored) { }
+        }
+      }
+    }
+  }
+
+  public boolean isTranslateBarHiddenForChat (long chatId) {
+    loadTranslateBarHiddenChats();
+    return _translateBarHiddenChats.contains(chatId);
+  }
+
+  public void setTranslateBarHiddenForChat (long chatId, boolean hidden) {
+    loadTranslateBarHiddenChats();
+    boolean changed = hidden ? _translateBarHiddenChats.add(chatId) : _translateBarHiddenChats.remove(chatId);
+    if (changed) {
+      StringBuilder builder = new StringBuilder();
+      boolean first = true;
+      for (long id : _translateBarHiddenChats) {
+        if (!first) builder.append(',');
+        builder.append(id);
+        first = false;
+      }
+      pmc.putString(KEY_TRANSLATE_BAR_HIDDEN, builder.toString());
+    }
+  }
+
   public boolean isAdvancedTranslateWholeChatEnabled () {
     return pmc.getBoolean(KEY_ADVANCED_WHOLE_CHAT, false);
   }

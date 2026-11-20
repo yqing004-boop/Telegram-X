@@ -291,19 +291,15 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
   private void showAiInput (int which) {
     int titleRes;
     String current;
-    switch (which) {
-      case INPUT_AI_ENDPOINT:
-        titleRes = R.string.AiTranslateEndpoint;
-        current = Settings.instance().getAiTranslateEndpoint();
-        break;
-      case INPUT_AI_KEY:
-        titleRes = R.string.AiTranslateKey;
-        current = Settings.instance().getAiTranslateKey();
-        break;
-      default:
-        titleRes = R.string.AiTranslateModel;
-        current = Settings.instance().getAiTranslateModel();
-        break;
+    if (which == INPUT_AI_ENDPOINT) {
+      titleRes = R.string.AiTranslateEndpoint;
+      current = Settings.instance().getAiTranslateEndpoint();
+    } else if (which == INPUT_AI_KEY) {
+      titleRes = R.string.AiTranslateKey;
+      current = Settings.instance().getAiTranslateKey();
+    } else {
+      titleRes = R.string.AiTranslateModel;
+      current = Settings.instance().getAiTranslateModel();
     }
     final int whichFinal = which;
     EditTextController<String> controller = new EditTextController<>(context(), tdlib);
