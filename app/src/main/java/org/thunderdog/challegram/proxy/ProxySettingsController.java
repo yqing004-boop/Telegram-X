@@ -107,7 +107,7 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
     List<ListItem> items = new ArrayList<>();
     items.add(new ListItem(ListItem.TYPE_HEADER, 0, 0, R.string.ProxyHeader));
     items.add(new ListItem(ListItem.TYPE_SHADOW_TOP));
-    items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_proxyToggle, 0, R.string.ProxyEnable));
+    items.add(new ListItem(ListItem.TYPE_RADIO_SETTING, R.id.btn_proxyToggle, 0, R.string.ProxyEnableCore));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));
     items.add(new ListItem(ListItem.TYPE_VALUED_SETTING_COMPACT, R.id.btn_proxySubscription, 0, R.string.ProxySubscription));
     items.add(new ListItem(ListItem.TYPE_SEPARATOR_FULL));

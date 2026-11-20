@@ -5437,7 +5437,7 @@
   <string name="ChatTranslateStyle3">No translation</string>
   <string name="ChatTranslateStyleDisabled">Disabled</string>
   <string name="ProxyHeader">机场代理</string>
-  <string name="ProxyEnable">启用本地代理内核</string>
+  <string name="ProxyEnableCore">启用本地代理内核</string>
   <string name="ProxySubscription">订阅链接</string>
   <string name="ProxySubscriptionEmpty">未设置</string>
   <string name="ProxySubscriptionDesc">粘贴机场订阅地址，将使用 sing-box 内核自动拉取全部节点。</string>
