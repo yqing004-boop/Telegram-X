@@ -90,8 +90,9 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
         } else if (itemId == R.id.btn_advancedTranslateTargetLang) {
           view.setData(getAdvancedTargetName());
         } else if (itemId == R.id.btn_advancedTranslatorConfig) {
-          view.setData(Lang.getString(Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE
-            ? R.string.AdvancedTranslatorGoogle : R.string.AdvancedTranslatorTelegram));
+          int tr = Settings.instance().getAdvancedTranslator();
+          view.setData(Lang.getString(tr == Settings.TRANSLATOR_GOOGLE ? R.string.AdvancedTranslatorGoogle
+            : tr == Settings.TRANSLATOR_AI ? R.string.AdvancedTranslatorAI : R.string.AdvancedTranslatorTelegram));
         } else if (itemId == R.id.btn_proxyEntry) {
           view.setData(org.thunderdog.challegram.proxy.SingBoxService.isRunning()
             ? "运行中 · 127.0.0.1:" + org.thunderdog.challegram.proxy.SingBoxService.getBoundPort()
@@ -247,14 +248,78 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
   }
 
   private void showAdvancedTranslatorOptions () {
-    showOptions(null, new int[] {R.id.btn_advancedTranslatorTelegram, R.id.btn_advancedTranslatorGoogle},
-      new String[] {Lang.getString(R.string.AdvancedTranslatorTelegram), Lang.getString(R.string.AdvancedTranslatorGoogle)},
+    showOptions(null, new int[] {R.id.btn_advancedTranslatorTelegram, R.id.btn_advancedTranslatorGoogle, R.id.btn_advancedTranslatorAI},
+      new String[] {Lang.getString(R.string.AdvancedTranslatorTelegram), Lang.getString(R.string.AdvancedTranslatorGoogle), Lang.getString(R.string.AdvancedTranslatorAI)},
       null, null, (itemView, id) -> {
-        Settings.instance().setAdvancedTranslator(id == R.id.btn_advancedTranslatorGoogle
-          ? Settings.TRANSLATOR_GOOGLE : Settings.TRANSLATOR_TELEGRAM);
+        int mode;
+        if (id == R.id.btn_advancedTranslatorGoogle) {
+          mode = Settings.TRANSLATOR_GOOGLE;
+        } else if (id == R.id.btn_advancedTranslatorAI) {
+          mode = Settings.TRANSLATOR_AI;
+        } else {
+          mode = Settings.TRANSLATOR_TELEGRAM;
+        }
+        Settings.instance().setAdvancedTranslator(mode);
         adapter.updateValuedSettingById(R.id.btn_advancedTranslatorConfig);
+        if (mode == Settings.TRANSLATOR_AI) {
+          showAiConfigMenu();
+        }
         return true;
       });
+  }
+
+  private void showAiConfigMenu () {
+    showOptions(null, new int[] {R.id.btn_aiEndpoint, R.id.btn_aiKey, R.id.btn_aiModel},
+      new String[] {Lang.getString(R.string.AiTranslateEndpoint), Lang.getString(R.string.AiTranslateKey), Lang.getString(R.string.AiTranslateModel)},
+      null, null, (itemView, id) -> {
+        if (id == R.id.btn_aiEndpoint) {
+          showAiInput(INPUT_AI_ENDPOINT);
+        } else if (id == R.id.btn_aiKey) {
+          showAiInput(INPUT_AI_KEY);
+        } else if (id == R.id.btn_aiModel) {
+          showAiInput(INPUT_AI_MODEL);
+        }
+        return true;
+      });
+  }
+
+  private static final int INPUT_AI_ENDPOINT = 11;
+  private static final int INPUT_AI_KEY = 12;
+  private static final int INPUT_AI_MODEL = 13;
+
+  private void showAiInput (int which) {
+    int titleRes;
+    String current;
+    switch (which) {
+      case INPUT_AI_ENDPOINT:
+        titleRes = R.string.AiTranslateEndpoint;
+        current = Settings.instance().getAiTranslateEndpoint();
+        break;
+      case INPUT_AI_KEY:
+        titleRes = R.string.AiTranslateKey;
+        current = Settings.instance().getAiTranslateKey();
+        break;
+      default:
+        titleRes = R.string.AiTranslateModel;
+        current = Settings.instance().getAiTranslateModel();
+        break;
+    }
+    final int whichFinal = which;
+    EditTextController<?> controller = new EditTextController<>(context(), new EditTextController.Delegate() {
+      @Override public int getId () { return whichFinal; }
+      @Override public CharSequence getName () { return Lang.getString(titleRes); }
+      @Override public CharSequence getHint () { return ""; }
+      @Override public String getCurrentValue () { return current; }
+      @Override public boolean onDonePressed (EditTextController<?> c, DoneButton button, CharSequence value) {
+        String v = value != null ? value.toString().trim() : "";
+        if (whichFinal == INPUT_AI_ENDPOINT) Settings.instance().setAiTranslateEndpoint(v);
+        else if (whichFinal == INPUT_AI_KEY) Settings.instance().setAiTranslateKey(v);
+        else Settings.instance().setAiTranslateModel(v);
+        navigateBack();
+        return true;
+      }
+    });
+    navigateTo(controller);
   }
 
   private void updateTranslationStyleMode (int mode) {

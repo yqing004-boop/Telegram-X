@@ -122,13 +122,28 @@ public final class TranslationsManager {
   }
 
   private void requestTranslationImpl (TdApi.FormattedText originalText, String toLanguage, Client.ResultHandler callback) {
-    if (Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE) {
+    int translator = Settings.instance().getAdvancedTranslator();
+    if (translator == Settings.TRANSLATOR_GOOGLE) {
       final String source = originalText.text;
       final String target = toLanguage;
       Thread thread = new Thread(() -> {
         TdApi.Object result = GoogleWebTranslator.translate(source, target);
         callback.onResult(result);
       }, "tgx-google-translate");
+      thread.setDaemon(true);
+      thread.start();
+      return;
+    }
+    if (translator == Settings.TRANSLATOR_AI) {
+      final String source = originalText.text;
+      final String target = toLanguage;
+      final String endpoint = Settings.instance().getAiTranslateEndpoint();
+      final String apiKey = Settings.instance().getAiTranslateKey();
+      final String model = Settings.instance().getAiTranslateModel();
+      Thread thread = new Thread(() -> {
+        TdApi.Object result = AiTranslator.translate(source, target, endpoint, apiKey, model);
+        callback.onResult(result);
+      }, "tgx-ai-translate");
       thread.setDaemon(true);
       thread.start();
       return;

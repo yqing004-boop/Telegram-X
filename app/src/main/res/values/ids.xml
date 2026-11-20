@@ -338,6 +338,7 @@
   <item type="id" name="btn_advancedSkipChinese" />
   <item type="id" name="btn_advancedWholeChat" />
   <item type="id" name="btn_proxyEntry" />
+  <item type="id" name="btn_input_translate" />
   <item type="id" name="btn_proxyToggle" />
   <item type="id" name="btn_proxySubscription" />
   <item type="id" name="btn_proxyLinks" />
@@ -350,6 +351,10 @@
   <item type="id" name="btn_advancedTargetApp" />
   <item type="id" name="btn_advancedTranslatorTelegram" />
   <item type="id" name="btn_advancedTranslatorGoogle" />
+  <item type="id" name="btn_advancedTranslatorAI" />
+  <item type="id" name="btn_aiEndpoint" />
+  <item type="id" name="btn_aiKey" />
+  <item type="id" name="btn_aiModel" />
   <item type="id" name="btn_chatDoNotTranslate" />
   <item type="id" name="btn_chatDoNotTranslateAppLang" />
   <item type="id" name="btn_chatDoNotTranslateSelected" />

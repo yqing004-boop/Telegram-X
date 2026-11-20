@@ -1225,12 +1225,41 @@ public class Settings {
   // Advanced message translation options are independent of Telegram X's existing translation mode.
   public static final int TRANSLATOR_TELEGRAM = 0;
   public static final int TRANSLATOR_GOOGLE = 1;
+  public static final int TRANSLATOR_AI = 2;
   public static final String ADVANCED_TARGET_APP = "app";
 
   private static final String KEY_ADVANCED_AUTO_TRANSLATE = "advanced_auto_translate_zh";
   private static final String KEY_ADVANCED_TRANSLATE_TARGET = "advanced_translate_target_zh";
   private static final String KEY_ADVANCED_SKIP_CHINESE = "advanced_skip_chinese_zh";
   private static final String KEY_ADVANCED_TRANSLATOR = "advanced_translator_zh";
+  private static final String KEY_AI_ENDPOINT = "ai_translate_endpoint";
+  private static final String KEY_AI_KEY = "ai_translate_key";
+  private static final String KEY_AI_MODEL = "ai_translate_model";
+
+  public String getAiTranslateEndpoint () {
+    return pmc.getString(KEY_AI_ENDPOINT, "");
+  }
+
+  public void setAiTranslateEndpoint (String value) {
+    pmc.putString(KEY_AI_ENDPOINT, value);
+  }
+
+  public String getAiTranslateKey () {
+    return pmc.getString(KEY_AI_KEY, "");
+  }
+
+  public void setAiTranslateKey (String value) {
+    pmc.putString(KEY_AI_KEY, value);
+  }
+
+  public String getAiTranslateModel () {
+    return pmc.getString(KEY_AI_MODEL, "");
+  }
+
+  public void setAiTranslateModel (String value) {
+    pmc.putString(KEY_AI_MODEL, value);
+  }
+
   private static final String KEY_ADVANCED_WHOLE_CHAT = "advanced_whole_chat_zh";
 
   public boolean isAdvancedTranslateWholeChatEnabled () {

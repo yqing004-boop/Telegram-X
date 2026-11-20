@@ -364,6 +364,11 @@ public class MessagesController extends ViewController<MessagesController.Argume
   private ImageView emojiButton;
   private VoiceVideoButtonView recordButton;
   private SendButton sendButton;
+  private android.widget.ImageView translateButton;
+  private org.thunderdog.challegram.data.TranslationsManager inputTranslationsManager;
+  private String inputTranslateOriginal;
+  private boolean inputTranslated;
+
   private HapticMenuHelper sendMenu;
   private CameraAccessImageView mediaButton;
   private InvisibleImageView cameraButton, scheduleButton;
@@ -1260,6 +1265,28 @@ public class MessagesController extends ViewController<MessagesController.Argume
     sendButton.setAlpha(0f);
     sendButton.setLayoutParams(params);
 
+    translateButton = new android.widget.ImageView(context);
+    translateButton.setId(R.id.btn_input_translate);
+    translateButton.setImageResource(R.drawable.baseline_translate_24);
+    translateButton.setOnClickListener(this);
+    translateButton.setOnLongClickListener(v -> {
+      showTranslateTargetOptions();
+      return true;
+    });
+    addThemeInvalidateListener(translateButton);
+    translateButton.setVisibility(View.INVISIBLE);
+    translateButton.setAlpha(0f);
+    RelativeLayout.LayoutParams translateParams = new RelativeLayout.LayoutParams(Screen.dp(55f), Screen.dp(49f));
+    translateParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+    if (Lang.rtl()) {
+      translateParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+      translateParams.leftMargin = Screen.dp(55f);
+    } else {
+      translateParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+      translateParams.rightMargin = Screen.dp(55f);
+    }
+    translateButton.setLayoutParams(translateParams);
+
     sendMenu = new HapticMenuHelper(this, this, getThemeListeners(), null).attachToView(sendButton);
     sendAsMenu = new HapticMenuHelper(hapticSendAsMenuProvider, this, getThemeListeners(), null).selectableMode(messageSenderButton).hapticListener(messageSenderButton);
     messageSenderButton.setHapticMenuHelper(sendAsMenu);
@@ -1474,6 +1501,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
       contentView.addView(emojiButton);
       contentView.addView(attachButtons);
       contentView.addView(sendButton);
+      contentView.addView(translateButton);
       contentView.addView(messageSenderButton);
 
       initSearchControls();
@@ -2083,6 +2111,8 @@ public class MessagesController extends ViewController<MessagesController.Argume
     } else if (viewId == R.id.msg_attach) {
       hideBottomHint();
       openMediaView(false, false);
+    } else if (viewId == R.id.btn_input_translate) {
+      toggleInputTranslation();
     } else if (viewId == R.id.msg_send) {
       if (!leaveInlineMode()) {
         if (inputView != null && !isSelfChat() && !tdlib.hasPremium() && inputView.hasOnlyPremiumFeatures()) {
@@ -3337,10 +3367,12 @@ public class MessagesController extends ViewController<MessagesController.Argume
       if (notEmpty) {
         attachButtons.setVisibility(View.INVISIBLE);
         sendButton.setVisibility(View.VISIBLE);
+        if (translateButton != null) translateButton.setVisibility(View.VISIBLE);
         messageSenderButton.setVisibility(View.INVISIBLE);
       } else {
         attachButtons.setVisibility(View.VISIBLE);
         sendButton.setVisibility(View.INVISIBLE);
+        if (translateButton != null) translateButton.setVisibility(View.INVISIBLE);
         if (canSelectSender()) {
           messageSenderButton.setVisibility(View.VISIBLE);
         }
@@ -3356,6 +3388,7 @@ public class MessagesController extends ViewController<MessagesController.Argume
       emojiButton.setVisibility(View.GONE);
       attachButtons.setVisibility(View.GONE);
       sendButton.setVisibility(View.GONE);
+      if (translateButton != null) translateButton.setVisibility(View.GONE);
       messageSenderButton.setVisibility(View.GONE);
     }
     updateBottomBarStyle();
@@ -9636,10 +9669,12 @@ public class MessagesController extends ViewController<MessagesController.Argume
 
   private void displaySendButton () {
     sendButton.setVisibility(View.VISIBLE);
+    if (translateButton != null) translateButton.setVisibility(View.VISIBLE);
   }
 
   private void hideSendButton () {
     sendButton.setVisibility(View.INVISIBLE);
+    if (translateButton != null) translateButton.setVisibility(View.INVISIBLE);
   }
 
   private void displayAttachButtons () {
@@ -9717,6 +9752,69 @@ public class MessagesController extends ViewController<MessagesController.Argume
       sendShown.setValue(isVisible, animated && isFocused());
       showMessageMenuTutorial();
     }
+  }
+
+  private void toggleInputTranslation () {
+    if (inputView == null) return;
+    if (inputTranslated) {
+      inputView.setInput(inputTranslateOriginal != null ? inputTranslateOriginal : "", true, true);
+      inputTranslated = false;
+      inputTranslateOriginal = null;
+      return;
+    }
+    TdApi.FormattedText text = inputView.getOutputText(false);
+    if (text == null || text.text == null || text.text.trim().isEmpty()) {
+      UI.showToast(Lang.getString(R.string.InputTranslateEmpty), Toast.LENGTH_SHORT);
+      return;
+    }
+    inputTranslateOriginal = text.text;
+    if (inputTranslationsManager == null) {
+      inputTranslationsManager = new org.thunderdog.challegram.data.TranslationsManager(tdlib, new org.thunderdog.challegram.data.TranslationsManager.Translatable() {
+        @Override
+        public String getOriginalMessageLanguage () {
+          return null;
+        }
+
+        @Override
+        public TdApi.FormattedText getTextToTranslate () {
+          TdApi.FormattedText current = inputView != null ? inputView.getOutputText(false) : null;
+          return current != null ? current : new TdApi.FormattedText("", new TdApi.TextEntity[0]);
+        }
+      }, (status, animated) -> { }, this::onInputTranslationResult, error -> {
+        UI.showToast(Lang.getString(R.string.InputTranslateFailed), Toast.LENGTH_SHORT);
+      });
+    }
+    inputTranslationsManager.requestTranslation(getInputTranslateTarget());
+  }
+
+  private String getInputTranslateTarget () {
+    String target = Settings.instance().getAdvancedTranslateTarget();
+    if (Settings.ADVANCED_TARGET_APP.equals(target)) {
+      target = Settings.instance().getLanguage().packInfo.pluralCode;
+    }
+    return target != null ? target : "zh-CN";
+  }
+
+  private void onInputTranslationResult (TdApi.FormattedText translated) {
+    if (translated == null || inputView == null) return;
+    inputView.setInput(translated.text, true, true);
+    inputTranslated = true;
+    UI.showToast(Lang.getString(R.string.InputTranslateHint), Toast.LENGTH_SHORT);
+  }
+
+  private void showTranslateTargetOptions () {
+    showOptions(null, new int[] {R.id.btn_advancedTargetZhCN, R.id.btn_advancedTargetZhTW, R.id.btn_advancedTargetApp},
+      new String[] {Lang.getString(R.string.AdvancedTargetZhCN), Lang.getString(R.string.AdvancedTargetZhTW), Lang.getString(R.string.AdvancedTargetApp)},
+      null, null, (itemView, id) -> {
+        if (id == R.id.btn_advancedTargetZhCN) {
+          Settings.instance().setAdvancedTranslateTarget("zh-CN");
+        } else if (id == R.id.btn_advancedTargetZhTW) {
+          Settings.instance().setAdvancedTranslateTarget("zh-TW");
+        } else if (id == R.id.btn_advancedTargetApp) {
+          Settings.instance().setAdvancedTranslateTarget(Settings.ADVANCED_TARGET_APP);
+        }
+        return true;
+      });
   }
 
   public void sendText (boolean applyMarkdown, TdApi.MessageSendOptions sendOptions) {

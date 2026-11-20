@@ -5436,7 +5436,11 @@
   <string name="ChatTranslateStyle2">Inline</string>
   <string name="ChatTranslateStyle3">No translation</string>
   <string name="ChatTranslateStyleDisabled">Disabled</string>
-  <string name="ProxyHeader">机场代理</string>
+    <string name="InputTranslateHint">翻译输入框内容</string>
+  <string name="InputTranslateEmpty">输入框为空</string>
+  <string name="InputTranslateFailed">翻译失败</string>
+  <string name="InputTranslateTarget">翻译目标语言</string>
+<string name="ProxyHeader">机场代理</string>
   <string name="ProxyEnableCore">启用本地代理内核</string>
   <string name="ProxySubscription">订阅链接</string>
   <string name="ProxySubscriptionEmpty">未设置</string>
@@ -5459,7 +5463,11 @@
   <string name="AdvancedTargetZhCN">简体中文</string>
   <string name="AdvancedTargetZhTW">繁體中文</string>
   <string name="AdvancedTargetApp">跟随应用语言</string>
-  <string name="AdvancedTranslatorTelegram">Telegram 官方翻译</string>
+    <string name="AdvancedTranslatorAI">AI 大模型翻译</string>
+  <string name="AiTranslateEndpoint">API 地址</string>
+  <string name="AiTranslateKey">API Key</string>
+  <string name="AiTranslateModel">模型名称</string>
+<string name="AdvancedTranslatorTelegram">Telegram 官方翻译</string>
   <string name="AdvancedTranslatorGoogle">Google 翻译（免费接口）</string>
   <string name="AdvancedTranslateDesc">开启后自动翻译进入屏幕的聊天消息；需使用「消息内」展示样式。</string>
   <string name="ChatTranslateOriginal">Original</string>
