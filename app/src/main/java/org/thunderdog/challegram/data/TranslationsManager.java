@@ -125,7 +125,10 @@ public final class TranslationsManager {
     if (Settings.instance().getAdvancedTranslator() == Settings.TRANSLATOR_GOOGLE) {
       final String source = originalText.text;
       final String target = toLanguage;
-      Thread thread = new Thread(() -> callback.onResult(GoogleWebTranslator.translate(source, target)), "tgx-google-translate");
+      Thread thread = new Thread(() -> {
+        TdApi.Object result = GoogleWebTranslator.translate(source, target);
+        callback.onResult(result);
+      }, "tgx-google-translate");
       thread.setDaemon(true);
       thread.start();
       return;

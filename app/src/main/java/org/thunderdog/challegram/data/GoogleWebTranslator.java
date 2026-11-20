@@ -21,7 +21,7 @@ public final class GoogleWebTranslator {
 
   private GoogleWebTranslator () { }
 
-  public static Object translate (String text, String toLanguage) {
+  public static TdApi.Object translate (String text, String toLanguage) {
     if (text == null || text.trim().isEmpty()) {
       return new TdApi.FormattedText("", new TdApi.TextEntity[0]);
     }
