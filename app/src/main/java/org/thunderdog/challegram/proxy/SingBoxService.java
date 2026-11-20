@@ -167,7 +167,11 @@ public class SingBoxService extends Service {
   public static synchronized void stopCore () {
     if (sProcess != null) {
       try { sProcess.destroy(); } catch (Throwable ignored) { }
-      try { sProcess.waitFor(); } catch (Throwable ignored) { }
+      try { sProcess.waitFor(2, java.util.concurrent.TimeUnit.SECONDS); } catch (Throwable ignored) { }
+      if (sProcess != null && sProcess.isAlive()) {
+        try { sProcess.destroyForcibly(); } catch (Throwable ignored) { }
+        try { sProcess.waitFor(1, java.util.concurrent.TimeUnit.SECONDS); } catch (Throwable ignored) { }
+      }
       sProcess = null;
     }
     sBoundPort = 0;
@@ -230,6 +234,11 @@ public class SingBoxService extends Service {
   @Override
   public void onDestroy () {
     stopCore();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      stopForeground(STOP_FOREGROUND_REMOVE);
+    } else {
+      stopForeground(true);
+    }
     super.onDestroy();
   }
 

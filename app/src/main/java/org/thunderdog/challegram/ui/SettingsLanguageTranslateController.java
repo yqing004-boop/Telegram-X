@@ -284,9 +284,9 @@ public class SettingsLanguageTranslateController extends RecyclerViewController<
       });
   }
 
-  private static final int INPUT_AI_ENDPOINT = 11;
-  private static final int INPUT_AI_KEY = 12;
-  private static final int INPUT_AI_MODEL = 13;
+  private static final int INPUT_AI_ENDPOINT = R.id.controller_aiInputEndpoint;
+  private static final int INPUT_AI_KEY = R.id.controller_aiInputKey;
+  private static final int INPUT_AI_MODEL = R.id.controller_aiInputModel;
 
   private void showAiInput (int which) {
     int titleRes;

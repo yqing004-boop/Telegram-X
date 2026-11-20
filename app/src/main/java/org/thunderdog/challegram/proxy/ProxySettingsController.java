@@ -175,8 +175,8 @@ public class ProxySettingsController extends RecyclerViewController<Void> implem
     return false;
   }
 
-  private static final int INPUT_SUBSCRIPTION = 1;
-  private static final int INPUT_LINKS = 2;
+  private static final int INPUT_SUBSCRIPTION = R.id.controller_inputSubscription;
+  private static final int INPUT_LINKS = R.id.controller_inputLinks;
 
   private void showSubscriptionInput () {
     EditTextController<String> controller = new EditTextController<>(context(), tdlib);

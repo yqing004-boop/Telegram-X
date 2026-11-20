@@ -344,6 +344,12 @@
   <item type="id" name="btn_proxyLinks" />
   <item type="id" name="btn_proxyState" />
   <item type="id" name="controller_proxySettings" />
+  <item type="id" name="controller_aiInputEndpoint" />
+  <item type="id" name="controller_aiInputKey" />
+  <item type="id" name="controller_aiInputModel" />
+  <item type="id" name="controller_inputSubscription" />
+  <item type="id" name="controller_inputLinks" />
+
   <item type="id" name="btn_advancedTranslateTargetLang" />
   <item type="id" name="btn_advancedTranslatorConfig" />
   <item type="id" name="btn_advancedTargetZhCN" />
